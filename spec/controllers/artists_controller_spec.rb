@@ -22,7 +22,14 @@ RSpec.describe ArtistsController, type: :controller do
         expect(response).to have_http_status(:success)
 
       end # end -- returns http success
-  
+ 
+      it "serves a non empty string" do
+
+      end
+   
+      it "serves valid json"  do 
+      end
+
       it "serves a non empty Array" do
         
         expect(assigns(:periods).class).to eq(Array)

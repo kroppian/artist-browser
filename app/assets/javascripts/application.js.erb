@@ -1,0 +1,61 @@
+// This is a manifest file that'll be compiled into application.js, which will include all the files
+// listed below.
+//
+// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,
+// or any plugin's vendor/assets/javascripts directory can be referenced here using a relative path.
+//
+// It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
+// compiled file.
+//
+// Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
+// about supported directives.
+//
+//= require jquery
+//= require jquery_ujs
+//= require turbolinks
+//= require_tree .
+//= require bootstrap-sprockets
+//= require angular
+
+(function(){
+
+  var artistBrowserApp = angular.module('artist-browser', []);
+
+  artistBrowserApp.config(['$httpProvider',function($httpProvider){
+
+    $httpProvider.defaults.headers.get = {
+      "Accept":"application/json;charset=utf-8",
+      "Accept-Charset":"charset=utf-8"
+    };
+
+  }]);
+  artistBrowserApp.controller('artistBrowserController', function($scope,$http,$location){
+
+    $scope.initialize = function(periods){
+      console.log(angular.fromJson(periods)) 
+      $scope.artisticPeriods = angular.fromJson(periods); 
+    }
+
+    $scope.loadingImages = true;
+    
+    $scope.switchPeriod = function(period){
+
+      var wasVisible = period.visible;
+
+      for (i = 0; i < $scope.artisticPeriods.length; i++) {
+        
+        $scope.artisticPeriods[i].visible = false; 
+
+      }
+
+      if (! wasVisible){
+        period.visible = true;
+      }
+
+    };
+
+  }   
+
+  );
+ 
+})();
