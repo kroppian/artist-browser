@@ -17,3 +17,38 @@
 @import "bootstrap";
 
 
+.widescreen-image-frame {
+  
+  max-height: 200px;
+  overflow:hidden;
+}
+
+.widescreen-image {
+
+  max-width:100%;
+
+  position:relative;
+  bottom:250px;
+
+}
+
+.artist-portrait-image {
+  
+  max-width:100%
+
+}
+
+.artist-portrait-wrapper {
+
+  height:64px;
+  width:64px;
+  overflow:hidden;
+  
+  border-radius:64px;
+
+}
+
+.artist-query {
+
+}
+

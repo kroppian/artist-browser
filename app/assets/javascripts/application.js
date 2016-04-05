@@ -31,5 +31,11 @@
       }]
   );
 
+  adminApp.controller('artistBrowserController', function($scope,$http,$location){
+
+    $scope.loadingImages = true;
+    $scope.fish = "trout";
+
+  });
  
 })();
