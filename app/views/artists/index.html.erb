@@ -2,11 +2,18 @@
   <div class="page-header">
     <h1>Browse Art</h1>
   </div>
-  <div class="row widescreen-image-frame">
-    <div class="col-md-12">
-      <img class="widescreen-image" alt="Jacques-Louis David - Oath of the Horatii - Google Art Project.jpg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Jacques-Louis_David_-_Oath_of_the_Horatii_-_Google_Art_Project.jpg/1200px-Jacques-Louis_David_-_Oath_of_the_Horatii_-_Google_Art_Project.jpg">
-    </div>
-  </div>
+
+
+  <div ng-repeat="period in artisticPeriods">
+
+  
+    <div class="row widescreen-image-frame">
+      <div class="col-md-12">
+
+        <img class="widescreen-image" alt="{{period.imgAlt}}" ng-src="{{period.imgSrc}}">
+
+      </div>
+    </div>  
 
   <div class="row">
 
@@ -68,9 +75,10 @@
     </div> <!-- end artist query-->
   </div>
 
-  <div class="row widescreen-image-frame">
-    <div class="col-md-12">
-      <img class="widescreen-image" alt="Claude Monet, Impression, soleil levant.jpg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1200px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg">
-    </div>
+
+
+
+
   </div>
 </div>
+
