@@ -6,79 +6,54 @@
 
   <div ng-repeat="period in artisticPeriods">
 
-  
+    <!-- Period example --> 
     <div class="row widescreen-image-frame">
       <div class="col-md-12">
 
-        <img class="widescreen-image" alt="{{period.imgAlt}}" ng-src="{{period.imgSrc}}">
+      <img class="widescreen-image" alt="{{period.imgAlt}}" ng-src="{{period.imgSrc}}">
 
       </div>
-    </div>  
+    </div> <!-- period example -->
 
-  <div class="row">
+    <!-- Artist serach box-->
+    <div class="row">
 
-    <div class="col-md-3">
-        <h4>Search Neoclassical artists</h4>
+      <!-- Search bar-->
+      <div class="col-md-3">
+        <h4>Search {{period.name}} artists</h4>
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search for...">
+        <input type="text" class="form-control" placeholder="Search for...">
         </div><!-- /input-group -->
-    </div>
-    <div class="col-md-9 ">
-      <br>
-      <div class="artist-query">
-        <div ng-repeat="n in [0, 1, 2, 3]">
+      </div> <!-- end search bar-->
 
-          <div class = "media">
-            <a class = "pull-left" href = "#">
-                <div class="artist-portrait-wrapper">
-                  <img class="artist-portrait-image" alt="David Self Portrait.jpg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/David_Self_Portrait.jpg/1200px-David_Self_Portrait.jpg">
+      <!-- Query results-->
+      <div class="col-md-9 ">
+        <br>
+        <div class="artist-query">
+
+          <!-- for each artist-->
+          <div ng-repeat="artist in period.artists">
+
+            <div class="media arist-query-result-row">
+              <a class="pull-left" href = "#">
+                <div class="circular-portrait-frame">
+                  <img class="artist-portrait-image"  ng-src="{{ artist.portraitSrc}}" alt="{{ artist.portraitAlt}}" >
+
                 </div>
-             </a>
-             
-             <div class = "media-body">
-               <h4 class = "media-heading">Jacques-Louis David</h4>
-               An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...
-             </div>
-            
-          </div> <!-- end media-->
+              </a>
 
-          <div class = "media">
-             <a class = "pull-left" href = "#">
-                <div class="artist-portrait-wrapper">
-                  <img class="artist-portrait-image" alt="Antonio Canova Selfportrait 1792.jpg" src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Antonio_Canova_Selfportrait_1792.jpg">
-                </div>
-             </a>
-             
-             <div class = "media-body">
-               <h4 class = "media-heading">Antonio Canova</h4>
-             </div>
-              An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...
-          </div><!-- end media-->
+              <div class = "media-body">
+                  <h4 class = "media-heading">{{artist.name}}</h4>
+              </div>
+              {{ artist.about }} 
+            </div><!-- end media-->
+          </div> <!-- for each artist-->
+        </div>
+      </div>  <!-- end query results -->
 
-          <div class = "media">
-             <a class = "pull-left" href = "#">
-                <div class="artist-portrait-wrapper">
-                  <img class="artist-portrait-image" alt="Ingres, Self-portrait.jpg" src="https://upload.wikimedia.org/wikipedia/commons/9/94/Ingres%2C_Self-portrait.jpg">
-                            
-                </div>
-             </a>
-             
-             <div class = "media-body">
-               <h4 class = "media-heading">Jean-Auguste-Dominique Ingres</h4>
+    </div> <!-- end artist search box-->
 
-             </div>
-             A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...
-          </div><!-- end media-->
+  </div> <!-- end for each period-->
 
-        </div> <!-- ng-repeat -->
-      </div>
-    </div> <!-- end artist query-->
-  </div>
-
-
-
-
-
-  </div>
-</div>
+</div> <!-- End container-->
 
