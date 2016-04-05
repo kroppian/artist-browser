@@ -17,40 +17,7 @@
 
     <!-- Artist serach box-->
     <div class="row">
-
-      <!-- Search bar-->
-      <div class="col-md-3">
-        <h4>Search {{period.name}} artists</h4>
-        <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search for...">
-        </div><!-- /input-group -->
-      </div> <!-- end search bar-->
-
-      <!-- Query results-->
-      <div class="col-md-9 ">
-        <br>
-        <div class="artist-query">
-
-          <!-- for each artist-->
-          <div ng-repeat="artist in period.artists">
-
-            <div class="media arist-query-result-row">
-              <a class="pull-left" href = "#">
-                <div class="circular-portrait-frame">
-                  <img class="artist-portrait-image"  ng-src="{{ artist.portraitSrc}}" alt="{{ artist.portraitAlt}}" >
-
-                </div>
-              </a>
-
-              <div class = "media-body">
-                  <h4 class = "media-heading">{{artist.name}}</h4>
-              </div>
-              {{ artist.about }} 
-            </div><!-- end media-->
-          </div> <!-- for each artist-->
-        </div>
-      </div>  <!-- end query results -->
-
+      <%= render 'search' %>
     </div> <!-- end artist search box-->
 
   </div> <!-- end for each period-->
