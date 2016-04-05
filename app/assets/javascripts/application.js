@@ -15,3 +15,21 @@
 //= require turbolinks
 //= require_tree .
 //= require bootstrap-sprockets
+//= require angular
+
+(function(){
+
+  var adminApp = angular.module('artist-browser', []);
+
+  adminApp.config(['$httpProvider',function($httpProvider){
+
+        $httpProvider.defaults.headers.get = {
+          "Accept":"application/json;charset=utf-8",
+          "Accept-Charset":"charset=utf-8"
+        };
+
+      }]
+  );
+
+ 
+})();
