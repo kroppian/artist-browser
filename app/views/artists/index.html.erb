@@ -7,7 +7,7 @@
   <div ng-repeat="period in artisticPeriods">
 
     <!-- Period example --> 
-    <div class="row widescreen-image-frame">
+    <div class="row widescreen-image-frame" ng-click="switchPeriod(period);">
       <div class="col-md-12">
 
       <img class="widescreen-image" alt="{{period.imgAlt}}" ng-src="{{period.imgSrc}}">
@@ -16,7 +16,7 @@
     </div> <!-- period example -->
 
     <!-- Artist serach box-->
-    <div class="row">
+    <div class="row" ng-show="period.visible">
       <%= render 'search' %>
     </div> <!-- end artist search box-->
 
