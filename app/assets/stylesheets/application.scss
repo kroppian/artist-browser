@@ -10,6 +10,54 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= require_tree .
- *= require_self
  */
+
+// "bootstrap-sprockets" must be imported before "bootstrap" and "bootstrap/variables"
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
+
+.widescreen-image-frame {
+  
+  max-height: 200px;
+  overflow:hidden;
+}
+
+.widescreen-image {
+
+  max-width:100%;
+  position:relative;
+  bottom:250px;
+  cursor:pointer;
+
+}
+
+.artist-portrait-image {
+  
+  max-width:100%
+
+}
+
+.circular-portrait-frame {
+
+  height:64px;
+  width:64px;
+  overflow:hidden;
+  border-radius:64px;
+
+}
+
+.artist-query {
+
+  padding-bottom:25px;
+  overflow: scroll;
+  height: 400px
+
+}
+
+.arist-query-result-row{
+
+  padding-top:10px;
+
+}
+

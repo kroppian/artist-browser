@@ -1,0 +1,26 @@
+<div class="container">
+  <div class="page-header">
+    <h1>Browse Art</h1>
+  </div>
+
+
+  <div ng-repeat="period in artisticPeriods">
+
+    <!-- Period example --> 
+    <div class="row widescreen-image-frame" ng-click="switchPeriod(period);">
+      <div class="col-md-12">
+
+      <img class="widescreen-image" alt="{{period.imgAlt}}" ng-src="{{period.imgSrc}}">
+
+      </div>
+    </div> <!-- period example -->
+
+    <!-- Artist serach box-->
+    <div class="row" ng-show="period.visible">
+      <%= render 'search' %>
+    </div> <!-- end artist search box-->
+
+  </div> <!-- end for each period-->
+
+</div> <!-- End container-->
+
