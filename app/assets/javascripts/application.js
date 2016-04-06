@@ -30,20 +30,21 @@
 
   }]);
 
+
   adminApp.controller('artistBrowserController', function($scope,$http,$location){
 
     $scope.loadingImages = true;
 
     $scope.neoclassicalArtistsStub = [
-      {'name':'Jacques-Louis David', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/David_Self_Portrait.jpg/1200px-David_Self_Portrait.jpg', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
-      {'name':'Antonio Canova', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/6/6b/Antonio_Canova_Selfportrait_1792.jpg', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
-      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/9/94/Ingres%2C_Self-portrait.jpg', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' },
-      {'name':'Jacques-Louis David', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/David_Self_Portrait.jpg/1200px-David_Self_Portrait.jpg', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
-      {'name':'Antonio Canova', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/6/6b/Antonio_Canova_Selfportrait_1792.jpg', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
-      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/9/94/Ingres%2C_Self-portrait.jpg', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' },
-      {'name':'Jacques-Louis David', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/David_Self_Portrait.jpg/1200px-David_Self_Portrait.jpg', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
-      {'name':'Antonio Canova', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/6/6b/Antonio_Canova_Selfportrait_1792.jpg', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
-      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/9/94/Ingres%2C_Self-portrait.jpg', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' }
+      {'name':'Jacques-Louis David', 'portraitSrc':'', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
+      {'name':'Antonio Canova', 'portraitSrc':'', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
+      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' },
+      {'name':'Jacques-Louis David', 'portraitSrc':'', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
+      {'name':'Antonio Canova', 'portraitSrc':'', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
+      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' },
+      {'name':'Jacques-Louis David', 'portraitSrc':'', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
+      {'name':'Claude Monet', 'portraitSrc':'', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
+      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' }
     ];
 
     $scope.artisticPeriods = [
@@ -81,7 +82,69 @@
 
     };
 
-  }   
+    $scope.getThumbnail = function(artistName,index){
+    // sanitize artist name
+    // return our page name in the thumbnail url
+      artistName = artistName.replace(/ /g, '_');
+      imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK&';
+      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
+        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
+
+         var pages = data.query.pages;
+
+         // get the thumbnail of the first page found
+         // TODO if name is not found??
+         $scope.neoclassicalArtistsStub[index].portraitSrc =  pages[Object.keys(pages)[0]].thumbnail.source;
+
+      }).error(function(data,status,headers,config){
+
+        // TODO more than one error type?
+        console.log("~~~");
+        console.log("Server Error"+ "Server 79 not responsive.");
+        console.log("~~~");
+
+      });
+      $scope.loadingImages = false;      
+    };
+
+    var artistName;
+    var imageMetadataUrl;
+    for (i = 0; i < $scope.neoclassicalArtistsStub.length; i++){
+      
+      $scope.getThumbnail($scope.neoclassicalArtistsStub[i].name,i);
+
+    }
+
+    $scope.fetchArtistList = function(periodName){
+
+      var url = 'https://petscan.wmflabs.org'
+      data = {
+        'language':'en',
+        'project':'wikipedia',
+        'depth':'0',
+        'categories':'French+Impressionist+painters',
+        'combination':'subset',
+        'combination':'subset',
+      }
+
+      // TODO is there changes in the proposal?
+      $http.post(url).success(
+          function(data,status,headers,config){
+            alert("success! <" + $scope.url + ">" );
+
+          }
+      ).error(function(data,status,headers,config){
+
+            alert("failure! <" + $scope.url + ">" );
+
+          }
+
+      );
+
+    }// end -- fetchArtistList
+
+
+  } // end -- artistBrowserController
 
   );
  
