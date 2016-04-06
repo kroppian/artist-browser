@@ -17,6 +17,9 @@
 //= require bootstrap-sprockets
 //= require angular
 
+// TODO make unit tests
+// TODO make more pretty getters with the objects
+
 (function(){
 
   var adminApp = angular.module('artist-browser', []);
@@ -33,29 +36,6 @@
 
   adminApp.controller('artistBrowserController', function($scope,$http,$location){
 
-    $scope.stubbedCategoryJSON = [
-      {"n":"result","a":{"querytime_sec":0.141519,"query":"https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=American%20Impressionist%20painters&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories"},"*":[{"n":"combination","a":{"type":"subset","*":[
-      {"id":20308,"len":47211,"n":"page","namespace":0,"nstext":"","title":"Mary_Cassatt","touched":"20160405223414"},
-      {"id":74097,"len":78986,"n":"page","namespace":0,"nstext":"","title":"James_Abbott_McNeill_Whistler","touched":"20160405223414"},
-      {"id":383639,"len":8398,"n":"page","namespace":0,"nstext":"","title":"John_Henry_Twachtman","touched":"20160405223414"},
-      {"id":47939620,"len":4620,"n":"page","namespace":0,"nstext":"","title":"Elmer_Wachtel","touched":"20160404143142"},
-      {"id":49280853,"len":2621,"n":"page","namespace":0,"nstext":"","title":"Carl_Thorp","touched":"20160326222635"},
-      {"id":49329401,"len":11035,"n":"page","namespace":0,"nstext":"","title":"Samuel_Burtis_Baker","touched":"20160404143142"}]}}]},
-
-      {"n":"result","a":
-        {"querytime_sec":0.602016,"query":"https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=French%20Impressionist%20painters&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories"},"*":[{"n":"combination","a":{"type":"subset","*":[
-      {"id":4233,"len":38352,"n":"page","namespace":0,"nstext":"","title":"Berthe_Morisot","touched":"20160405223414"},
-      {"id":6548,"len":49738,"n":"page","namespace":0,"nstext":"","title":"Claude_Monet","touched":"20160406170412"},
-      {"id":7434,"len":48292,"n":"page","namespace":0,"nstext":"","title":"Camille_Pissarro","touched":"20160405223414"},
-      {"id":9615,"len":37274,"n":"page","namespace":0,"nstext":"","title":"Édouard_Manet","touched":"20160405233635"},
-      {"id":11459,"len":7647,"n":"page","namespace":0,"nstext":"","title":"Frédéric_Bazille","touched":"20160405223414"},
-      {"id":41458992,"len":3940,"n":"page","namespace":0,"nstext":"","title":"Marcel_Dyf","touched":"20160404143142"},
-      {"id":44664479,"len":3683,"n":"page","namespace":0,"nstext":"","title":"Ludovic_Piette","touched":"20160405223414"},
-      {"id":47454019,"len":11649,"n":"page","namespace":0,"nstext":"","title":"Antoine_Guillemet","touched":"20160405223414"},
-      {"id":49052643,"len":6631,"n":"page","namespace":0,"nstext":"","title":"Étienne_Buffet","touched":"20160405223414"}]}}]}
-    
-    
-    ];
 
     $scope.loadingImages = true;
 
@@ -79,33 +59,35 @@
       console.log("++++");
       // geto the meat of the monstrosity
       rawCatList = rawCatList['*'][0].a['*'];
-      for (i = 0; i < rawCatList.length; i++){
-      
-        console.log(rawCatList[i].title);
 
-      }
-      console.log("++++");
+      // replace each artist with the JSON format we're looking for
+      return rawCatList.map(function(currentArt){
+      
+        return {'name':currentArt.title,
+          'portraitSrc':'',
+          'portraitAlt':'Artist Thumbnail',
+          'about':'A god damn good artist!'}
+      
+      });
+
     }
 
     $scope.getAristList = function(period, categoryToSearch){
   
-      imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=Claude_Monet&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK&';
-      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
+      categoryApiUrl="https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=American%20Impressionist%20painters&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK"
+
+      $http.jsonp(categoryApiUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
         
         // convert the artist JSON to 
         console.log("hello there! Looking for " + categoryToSearch);
-        
-        // TODO pull real category data
-        
-        $scope.messageCategoryList( $scope.stubbedCategoryJSON[categoryToSearch]);
+        console.log($scope.messageCategoryList(data));
         console.log("~~~~~~~~~"); 
 
       }).error(function(data,status,headers,config){
 
         // do nothing. Do not add any artist to the list
         console.log("Failed to find " + categoryToSearch + "...");
-
 
       });
          
