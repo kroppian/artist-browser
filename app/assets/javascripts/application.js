@@ -42,7 +42,8 @@
       {"id":49280853,"len":2621,"n":"page","namespace":0,"nstext":"","title":"Carl_Thorp","touched":"20160326222635"},
       {"id":49329401,"len":11035,"n":"page","namespace":0,"nstext":"","title":"Samuel_Burtis_Baker","touched":"20160404143142"}]}}]},
 
-      {"n":"result","a":{"querytime_sec":0.602016,"query":"https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=French%20Impressionist%20painters&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories"},"*":[{"n":"combination","a":{"type":"subset","*":[
+      {"n":"result","a":
+        {"querytime_sec":0.602016,"query":"https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=French%20Impressionist%20painters&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories"},"*":[{"n":"combination","a":{"type":"subset","*":[
       {"id":4233,"len":38352,"n":"page","namespace":0,"nstext":"","title":"Berthe_Morisot","touched":"20160405223414"},
       {"id":6548,"len":49738,"n":"page","namespace":0,"nstext":"","title":"Claude_Monet","touched":"20160406170412"},
       {"id":7434,"len":48292,"n":"page","namespace":0,"nstext":"","title":"Camille_Pissarro","touched":"20160405223414"},
@@ -69,7 +70,24 @@
         'visible':false}
     ];
 
-    $scope.getAristList = function(categoryToSearch){
+
+    /*
+     * Take the nasty JSON of wikipedia categories and message the JSON back into 
+     * sanity.
+     */
+    $scope.messageCategoryList = function(rawCatList){
+      console.log("++++");
+      // geto the meat of the monstrosity
+      rawCatList = rawCatList['*'][0].a['*'];
+      for (i = 0; i < rawCatList.length; i++){
+      
+        console.log(rawCatList[i].title);
+
+      }
+      console.log("++++");
+    }
+
+    $scope.getAristList = function(period, categoryToSearch){
   
       imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=Claude_Monet&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK&';
       $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
@@ -77,7 +95,11 @@
         
         // convert the artist JSON to 
         console.log("hello there! Looking for " + categoryToSearch);
-
+        
+        // TODO pull real category data
+        
+        $scope.messageCategoryList( $scope.stubbedCategoryJSON[categoryToSearch]);
+        console.log("~~~~~~~~~"); 
 
       }).error(function(data,status,headers,config){
 
@@ -90,6 +112,10 @@
 
     } 
 
+
+    /*
+     * Main loop
+     */
     for(pInd = 0; pInd < $scope.artisticPeriodsToFind.length; pInd++){
      
       var period = $scope.artisticPeriodsToFind[pInd];
@@ -97,12 +123,13 @@
       for(cInd = 0; cInd < period.categoryPages.length; cInd++){
 
         var categoryPage = period.categoryPages[cInd];
-        
-        $scope.getAristList(categoryPage);
+       
+        // change this to just pass the category name 
+        $scope.getAristList(period, cInd);
 
       }
 
-    }
+    } // end -- Main loop
 
 
     /*$scope.neoclassicalArtistsStub = [
