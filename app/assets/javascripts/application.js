@@ -40,6 +40,12 @@
     $scope.loadingImages = true;
 
     $scope.artisticPeriods = [
+      {'name':'Neoclassical',
+        'categoryPages':['American neoclassical painters', 'French neoclassical painters'],
+        'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Jacques-Louis_David_-_Oath_of_the_Horatii_-_Google_Art_Project.jpg/1200px-Jacques-Louis_David_-_Oath_of_the_Horatii_-_Google_Art_Project.jpg',
+        'imgAlt':'Jacques-Louis David - Oath of the Horatii - Google Art Project.jpg',
+        'artists': [],
+        'visible':false},
       {'name':'Impressionistic',
         'categoryPages':['American Impressionist painters', 'French Impressionist painters'],
         'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1200px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg',
@@ -69,20 +75,19 @@
 
     }
 
-    $scope.getAristList = function(period, categoryToSearch){
+    $scope.getArtistList = function(period, categoryToSearch){
   
-      categoryApiUrl="https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=American%20Impressionist%20painters&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK"
+      categoryApiUrl="https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=" + categoryToSearch + "&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK"
 
       $http.jsonp(categoryApiUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
         
         // convert the artist JSON to 
-        console.log("hello there! Looking for " + categoryToSearch);
         data=$scope.messageCategoryList(data)
-        console.log(data);
-        console.log("~~~~~~~~~"); 
-        for(i = 0; i < data.length; i++) {
-          $scope.artisticPeriods[period].artists.push(data[i]);
+        for(artistInd = 0; artistInd < data.length; artistInd++) {
+          $scope.artisticPeriods[period].artists.push(data[artistInd]);
+          $scope.getThumbnail(artistInd,period );
+
         }
         
       }).error(function(data,status,headers,config){
@@ -95,6 +100,7 @@
 
     } 
 
+    
 
     /*
      * Main loop
@@ -108,11 +114,41 @@
         var categoryPage = period.categoryPages[cInd];
        
         // change this to just pass the category name 
-        $scope.getAristList(pInd, cInd);
+        $scope.getArtistList(pInd, categoryPage);
+
 
       }
 
     } // end -- Main loop
+
+    $scope.getThumbnail = function(artistInd, periodInd){
+    // sanitize artist name
+    // return our page name in the thumbnail url
+      var artistName = $scope.artisticPeriods[periodInd].artists[artistInd].name;
+      imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK&';
+      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
+        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
+
+         var pages = data.query.pages;
+
+         // get the thumbnail of the first page found
+         // TODO if name is not found??
+         if ( 'thumbnail' in pages[Object.keys(pages)[0]]){
+         
+           $scope.artisticPeriods[periodInd].artists[artistInd].portraitSrc = pages[Object.keys(pages)[0]].thumbnail.source;
+
+         }
+
+      }).error(function(data,status,headers,config){
+
+        // TODO more than one error type?
+        console.log("~~~");
+        console.log("No thumbnail is available for artist" + $scope.artisticPeriods[periodInd].artists[artistInd].name);
+        console.log("~~~");
+
+      });
+    };
+
 
     /*$scope.neoclassicalArtistsStub = [
       {'name':'Jacques-Louis David', 'portraitSrc':'', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
@@ -147,38 +183,6 @@
 
 
 
-    $scope.getThumbnail = function(artistName,index){
-    // sanitize artist name
-    // return our page name in the thumbnail url
-      artistName = artistName.replace(/ /g, '_');
-      imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK&';
-      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
-        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
-
-         var pages = data.query.pages;
-
-         // get the thumbnail of the first page found
-         // TODO if name is not found??
-         $scope.neoclassicalArtistsStub[index].portraitSrc =  pages[Object.keys(pages)[0]].thumbnail.source;
-
-      }).error(function(data,status,headers,config){
-
-        // TODO more than one error type?
-        console.log("~~~");
-        console.log("Server Error"+ "Server 79 not responsive.");
-        console.log("~~~");
-
-      });
-      $scope.loadingImages = false;      
-    };
-
-    var artistName;
-    var imageMetadataUrl;
-    /*for (i = 0; i < $scope.neoclassicalArtistsStub.length; i++){
-      
-      $scope.getThumbnail($scope.neoclassicalArtistsStub[i].name,i);
-
-    }*/
 
     $scope.switchPeriod = function(period){
 
