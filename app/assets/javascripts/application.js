@@ -41,13 +41,13 @@
 
     $scope.artisticPeriods = [
       {'name':'Neoclassical',
-        'categoryPages':['American neoclassical painters', 'French neoclassical painters'],
+        'categoryPages':['French neoclassical painters'],
         'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Jacques-Louis_David_-_Oath_of_the_Horatii_-_Google_Art_Project.jpg/1200px-Jacques-Louis_David_-_Oath_of_the_Horatii_-_Google_Art_Project.jpg',
         'imgAlt':'Jacques-Louis David - Oath of the Horatii - Google Art Project.jpg',
         'artists': [],
         'visible':false},
       {'name':'Impressionistic',
-        'categoryPages':['American Impressionist painters', 'French Impressionist painters'],
+        'categoryPages':['French Impressionist painters'],
         'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1200px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg',
         'imgAlt':'Claude Monet, Impression, soleil levant.jpg',
         'artists': [],
@@ -67,7 +67,7 @@
       return rawCatList.map(function(currentArt){
       
         return {'name':currentArt.title,
-          'portraitSrc':'',
+          'portraitSrc':'/assets/Tripod_easel.jpg',
           'portraitAlt':'Artist Thumbnail',
           'about':'A god damn good artist!'}
       
@@ -87,6 +87,7 @@
         for(artistInd = 0; artistInd < data.length; artistInd++) {
           $scope.artisticPeriods[period].artists.push(data[artistInd]);
           $scope.getThumbnail(artistInd,period );
+          $scope.getAbout(artistInd,period );
 
         }
         
@@ -149,40 +150,50 @@
       });
     };
 
+    $scope.getAbout = function(artistInd, periodInd){
+    // sanitize artist name
+    // return our page name in the thumbnail url
+      var artistName = $scope.artisticPeriods[periodInd].artists[artistInd].name;
+      imageMetadataUrl='https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=' + artistName;
+      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
+        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
 
-    /*$scope.neoclassicalArtistsStub = [
-      {'name':'Jacques-Louis David', 'portraitSrc':'', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
-      {'name':'Antonio Canova', 'portraitSrc':'', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
-      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' },
-      {'name':'Jacques-Louis David', 'portraitSrc':'', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
-      {'name':'Antonio Canova', 'portraitSrc':'', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
-      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' },
-      {'name':'Jacques-Louis David', 'portraitSrc':'', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
-      {'name':'Claude Monet', 'portraitSrc':'', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
-      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' }
-    ];*/
+         var pages = data.query.pages;
 
-    /*$scope.artisticPeriods = [
-      {'name':'Neoclassical',
-        'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Jacques-Louis_David_-_Oath_of_the_Horatii_-_Google_Art_Project.jpg/1200px-Jacques-Louis_David_-_Oath_of_the_Horatii_-_Google_Art_Project.jpg',
-        'imgAlt':'Jacques-Louis David - Oath of the Horatii - Google Art Project.jpg',
-        'artists': $scope.neoclassicalArtistsStub,
-        'visible':false},
-      {'name':'Impressionistic',
-        'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1200px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg',
-        'imgAlt':'Claude Monet, Impression, soleil levant.jpg',
-        'artists': $scope.neoclassicalArtistsStub,
-        'visible':false},
-      {'name':'Post Impressionistic',
-        'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1200px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg',
-        'imgAlt':'A painting of a scene at night with 11 swirly stars and a bright yellow crescent moon. In the background there are hills, in the middle ground there is a moonlit town with a church that has an elongated steeple, and in the foreground there is the dark green silhouette of a cypress tree.',
-        'artists': $scope.neoclassicalArtistsStub,
-        'visible':false}
-      ] */
+         // get the thumbnail of the first page found
+         // TODO if name is not found??
+         if ( 'extract' in pages[Object.keys(pages)[0]]){
+         
+           $scope.artisticPeriods[periodInd].artists[artistInd].about = $scope.cleanAbout(pages[Object.keys(pages)[0]].extract);
 
+         }
+
+      }).error(function(data,status,headers,config){
+
+        // TODO more than one error type?
+        console.log("~~~");
+        console.log("No thumbnail is available for artist" + $scope.artisticPeriods[periodInd].artists[artistInd].name);
+        console.log("~~~");
+
+      });
+    };
+
+    $scope.cleanAbout = function(name){
 
 
+      return name.replace(
+          /\([^)]*\)/,'').substring(
+            0,170).replace(
+              / \w+$/,'') + "...";
+    
+    }
 
+
+    $scope.cleanName = function(name){
+
+      return name.replace(/_/g,' ').replace(/(Artist)/g,'')
+    
+    }
 
     $scope.switchPeriod = function(period){
 
