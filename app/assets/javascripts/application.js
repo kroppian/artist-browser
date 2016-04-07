@@ -22,9 +22,9 @@
 
 (function(){
 
-  var ArtistBrowserApp = angular.module('artist-browser', []);
+  var Module = angular.module('artist-browser', []);
 
-  ArtistBrowserApp.config(['$httpProvider',function($httpProvider){
+  Module.config(['$httpProvider',function($httpProvider){
 
     $httpProvider.defaults.headers.get = {
       "Accept":"application/json;charset=utf-8",
@@ -34,9 +34,8 @@
   }]);
 
 
-  ArtistBrowserApp.controller('artistBrowserController', function($scope,$http){
+  Module.controller('artistBrowserController', function($scope,$http){
 
-    $scope.hiTest = "hello test!";
     $scope.loadingImages = true;
 
     $scope.artisticPeriods = [
