@@ -22,9 +22,9 @@
 
 (function(){
 
-  var adminApp = angular.module('artist-browser', []);
+  var ArtistBrowserApp = angular.module('artist-browser', []);
 
-  adminApp.config(['$httpProvider',function($httpProvider){
+  ArtistBrowserApp.config(['$httpProvider',function($httpProvider){
 
     $httpProvider.defaults.headers.get = {
       "Accept":"application/json;charset=utf-8",
@@ -34,7 +34,7 @@
   }]);
 
 
-  adminApp.controller('artistBrowserController', function($scope,$http){
+  ArtistBrowserApp.controller('artistBrowserController', function($scope,$http){
 
     $scope.hiTest = "hello test!";
     $scope.loadingImages = true;
@@ -66,9 +66,7 @@
      */
     $scope.messageCategoryList = function(rawCatList){
       // geto the meat of the monstrosity
-      console.log(rawCatList);
       rawCatList = rawCatList['*'][0].a['*'];
-      console.log(rawCatList.length);
       // replace each artist with the JSON format we're looking for
       return rawCatList.map(function(currentArt){
       
@@ -91,9 +89,10 @@
         // convert the artist JSON to 
         data=$scope.messageCategoryList(data);
         for(artistInd = 0; artistInd < data.length; artistInd++) {
-          $scope.artisticPeriods[period].artists.push(data[artistInd]);
-          $scope.getThumbnail(artistInd,period );
-          $scope.getAbout(artistInd,period );
+
+          period.artists.push(data[artistInd]);
+          $scope.getThumbnail(period, artistInd);
+          $scope.getAbout(period, artistInd);
 
         }
         
@@ -121,17 +120,17 @@
         var categoryPage = period.categoryPages[cInd];
        
         // change this to just pass the category name 
-        $scope.getArtistList(pInd, categoryPage);
+        $scope.getArtistList(period, categoryPage);
 
 
       }
 
     } // end -- Main loop
 
-    $scope.getThumbnail = function(artistInd, periodInd){
+    $scope.getThumbnail = function(period, artistInd ){
     // sanitize artist name
     // return our page name in the thumbnail url
-      var artistName = $scope.artisticPeriods[periodInd].artists[artistInd].name;
+      var artistName = period.artists[artistInd].name;
       imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK&';
       $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
@@ -141,23 +140,23 @@
          // get the thumbnail of the first page found
          if ( 'thumbnail' in pages[Object.keys(pages)[0]]){
          
-           $scope.artisticPeriods[periodInd].artists[artistInd].portraitSrc = pages[Object.keys(pages)[0]].thumbnail.source;
+           period.artists[artistInd].portraitSrc = pages[Object.keys(pages)[0]].thumbnail.source;
 
          }
 
       }).error(function(data,status,headers,config){
 
         console.log("~~~");
-        console.log("No thumbnail is available for artist" + $scope.artisticPeriods[periodInd].artists[artistInd].name);
+        console.log("No thumbnail is available for artist" + period.artists[artistInd].name);
         console.log("~~~");
 
       });
     };
 
-    $scope.getAbout = function(artistInd, periodInd){
-    // sanitize artist name
+    $scope.getAbout = function(period,artistInd ){
+
     // return our page name in the thumbnail url
-      var artistName = $scope.artisticPeriods[periodInd].artists[artistInd].name;
+      var artistName = period.artists[artistInd].name;
       imageMetadataUrl='https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=' + artistName;
       $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
@@ -167,14 +166,14 @@
          // get the thumbnail of the first page found
          if ( 'extract' in pages[Object.keys(pages)[0]]){
          
-           $scope.artisticPeriods[periodInd].artists[artistInd].about = $scope.cleanAbout(pages[Object.keys(pages)[0]].extract);
+           period.artists[artistInd].about = $scope.cleanAbout(pages[Object.keys(pages)[0]].extract);
 
          }
 
       }).error(function(data,status,headers,config){
 
         console.log("~~~");
-        console.log("No thumbnail is available for artist" + $scope.artisticPeriods[periodInd].artists[artistInd].name);
+        console.log("No thumbnail is available for artist" + period.artists[artistInd].name);
         console.log("~~~");
 
       });
@@ -214,9 +213,7 @@
     };
 
 
-  } // end -- artistBrowserController
-
-  );
+  }); // end -- artistBrowserController
  
 })();
 
