@@ -5,6 +5,9 @@ sudo: false
 rvm:
     - 2.3.0
 
+script: 
+  rake jasmine:ci  
+
 bundler_args: --without development production --deployment --jobs=3 --retry=3
 
 cache: bundler
