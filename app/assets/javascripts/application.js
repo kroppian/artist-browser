@@ -17,6 +17,9 @@
 //= require bootstrap-sprockets
 //= require angular
 
+// TODO make unit tests
+// TODO make more pretty getters with the objects
+
 (function(){
 
   var adminApp = angular.module('artist-browser', []);
@@ -30,40 +33,173 @@
 
   }]);
 
+
   adminApp.controller('artistBrowserController', function($scope,$http,$location){
+
 
     $scope.loadingImages = true;
 
-    $scope.neoclassicalArtistsStub = [
-      {'name':'Jacques-Louis David', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/David_Self_Portrait.jpg/1200px-David_Self_Portrait.jpg', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
-      {'name':'Antonio Canova', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/6/6b/Antonio_Canova_Selfportrait_1792.jpg', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
-      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/9/94/Ingres%2C_Self-portrait.jpg', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' },
-      {'name':'Jacques-Louis David', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/David_Self_Portrait.jpg/1200px-David_Self_Portrait.jpg', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
-      {'name':'Antonio Canova', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/6/6b/Antonio_Canova_Selfportrait_1792.jpg', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
-      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/9/94/Ingres%2C_Self-portrait.jpg', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' },
-      {'name':'Jacques-Louis David', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/David_Self_Portrait.jpg/1200px-David_Self_Portrait.jpg', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
-      {'name':'Antonio Canova', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/6/6b/Antonio_Canova_Selfportrait_1792.jpg', 'portraitAlt':'Antonio Canova Selfportrait 1792.jpg', 'about':'An Italian neoclassical sculptor, famous for his marble sculptures. Often regarded as the greatest of the neoclassical artists, his artwork was...' },
-      {'name':'Jean-Auguste-Dominique Ingres', 'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/9/94/Ingres%2C_Self-portrait.jpg', 'portraitAlt':'Ingres, Self-portrait.jpg', 'about':' A French Neoclassical painter. Although he considered himself to be a painter of history in the tradition of Nicolas Poussin...' }
-    ];
-
     $scope.artisticPeriods = [
       {'name':'Neoclassical',
+        'categoryPages':['French neoclassical painters'],
         'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Jacques-Louis_David_-_Oath_of_the_Horatii_-_Google_Art_Project.jpg/1200px-Jacques-Louis_David_-_Oath_of_the_Horatii_-_Google_Art_Project.jpg',
         'imgAlt':'Jacques-Louis David - Oath of the Horatii - Google Art Project.jpg',
-        'artists': $scope.neoclassicalArtistsStub,
+        'artists': [],
         'visible':false},
       {'name':'Impressionistic',
+        'categoryPages':['French Impressionist painters'],
         'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1200px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg',
         'imgAlt':'Claude Monet, Impression, soleil levant.jpg',
-        'artists': $scope.neoclassicalArtistsStub,
+        'artists': [],
         'visible':false},
-      {'name':'Post Impressionistic',
-        'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1200px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg',
-        'imgAlt':'A painting of a scene at night with 11 swirly stars and a bright yellow crescent moon. In the background there are hills, in the middle ground there is a moonlit town with a church that has an elongated steeple, and in the foreground there is the dark green silhouette of a cypress tree.',
-        'artists': $scope.neoclassicalArtistsStub,
-        'visible':false}
-      ] 
+      {'name':'Cubist',
+        'categoryPages':['Cubist artists'],
+        'imgSrc':'https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/Pablo_Picasso%2C_1910%2C_Girl_with_a_Mandolin_%28Fanny_Tellier%29%2C_oil_on_canvas%2C_100.3_x_73.6_cm%2C_Museum_of_Modern_Art_New_York..jpg/1200px-Pablo_Picasso%2C_1910%2C_Girl_with_a_Mandolin_%28Fanny_Tellier%29%2C_oil_on_canvas%2C_100.3_x_73.6_cm%2C_Museum_of_Modern_Art_New_York..jpg',
+        'imgAlt':'Pablo Picasso, 1910, Girl with a Mandolin (Fanny Tellier), oil on canvas, 100.3 x 73.6 cm, Museum of Modern Art New York..jpg',
+        'artists': [],
+        'visible':false},
+    ];
 
+    /*
+     * Take the nasty JSON of wikipedia categories and message the JSON back into 
+     * sanity.
+     */
+    $scope.messageCategoryList = function(rawCatList){
+      // geto the meat of the monstrosity
+      console.log(rawCatList);
+      rawCatList = rawCatList['*'][0].a['*'];
+      console.log(rawCatList.length);
+      // replace each artist with the JSON format we're looking for
+      return rawCatList.map(function(currentArt){
+      
+        return {'name':currentArt.title,
+          'portraitSrc':'/assets/Tripod_easel.jpg',
+          'portraitAlt':'Artist Thumbnail',
+          'about':'A god damn good artist!'}
+      
+      });
+
+    }
+
+    $scope.getArtistList = function(period, categoryToSearch){
+  
+      categoryApiUrl="https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=" + categoryToSearch + "&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK"
+
+      $http.jsonp(categoryApiUrl,{headers:{"Accept":"application/json;charset=utf-8",
+        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
+         
+        // convert the artist JSON to 
+        data=$scope.messageCategoryList(data);
+        for(artistInd = 0; artistInd < data.length; artistInd++) {
+          $scope.artisticPeriods[period].artists.push(data[artistInd]);
+          $scope.getThumbnail(artistInd,period );
+          $scope.getAbout(artistInd,period );
+
+        }
+        
+      }).error(function(data,status,headers,config){
+
+        // do nothing. Do not add any artist to the list
+        console.log("Failed to find " + categoryToSearch + "...");
+
+      });
+         
+
+    } 
+
+    
+
+    /*
+     * Main loop
+     */
+    for(pInd = 0; pInd < $scope.artisticPeriods.length; pInd++){
+     
+      var period = $scope.artisticPeriods[pInd];
+
+      for(cInd = 0; cInd < period.categoryPages.length; cInd++){
+
+        var categoryPage = period.categoryPages[cInd];
+       
+        // change this to just pass the category name 
+        $scope.getArtistList(pInd, categoryPage);
+
+
+      }
+
+    } // end -- Main loop
+
+    $scope.getThumbnail = function(artistInd, periodInd){
+    // sanitize artist name
+    // return our page name in the thumbnail url
+      var artistName = $scope.artisticPeriods[periodInd].artists[artistInd].name;
+      imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK&';
+      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
+        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
+
+         var pages = data.query.pages;
+
+         // get the thumbnail of the first page found
+         // TODO if name is not found??
+         if ( 'thumbnail' in pages[Object.keys(pages)[0]]){
+         
+           $scope.artisticPeriods[periodInd].artists[artistInd].portraitSrc = pages[Object.keys(pages)[0]].thumbnail.source;
+
+         }
+
+      }).error(function(data,status,headers,config){
+
+        // TODO more than one error type?
+        console.log("~~~");
+        console.log("No thumbnail is available for artist" + $scope.artisticPeriods[periodInd].artists[artistInd].name);
+        console.log("~~~");
+
+      });
+    };
+
+    $scope.getAbout = function(artistInd, periodInd){
+    // sanitize artist name
+    // return our page name in the thumbnail url
+      var artistName = $scope.artisticPeriods[periodInd].artists[artistInd].name;
+      imageMetadataUrl='https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=' + artistName;
+      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
+        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
+
+         var pages = data.query.pages;
+
+         // get the thumbnail of the first page found
+         // TODO if name is not found??
+         if ( 'extract' in pages[Object.keys(pages)[0]]){
+         
+           $scope.artisticPeriods[periodInd].artists[artistInd].about = $scope.cleanAbout(pages[Object.keys(pages)[0]].extract);
+
+         }
+
+      }).error(function(data,status,headers,config){
+
+        // TODO more than one error type?
+        console.log("~~~");
+        console.log("No thumbnail is available for artist" + $scope.artisticPeriods[periodInd].artists[artistInd].name);
+        console.log("~~~");
+
+      });
+    };
+
+    $scope.cleanAbout = function(name){
+
+
+      return name.replace(
+          /\([^)]*\)/,'').substring(
+            0,170).replace(
+              / \w+$/,'') + "...";
+    
+    }
+
+
+    $scope.cleanName = function(name){
+
+      return name.replace(/_/g,' ').replace(/(Artist)/g,'')
+    
+    }
 
     $scope.switchPeriod = function(period){
 
@@ -81,7 +217,8 @@
 
     };
 
-  }   
+
+  } // end -- artistBrowserController
 
   );
  

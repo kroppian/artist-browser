@@ -15,17 +15,17 @@
           <div ng-repeat="artist in period.artists">
 
             <div class="media arist-query-result-row">
-              <a class="pull-left" href = "#">
+              <a class="pull-left" ng-href = "{{ 'https://en.wikipedia.org/wiki/' + artist.name }}">
                 <div class="circular-portrait-frame">
-                  <img class="artist-portrait-image"  ng-src="{{ artist.portraitSrc}}" alt="{{ artist.portraitAlt}}" >
+                  <img class="artist-portrait-image"  ng-src="{{artist.portraitSrc}}" alt="{{ artist.portraitAlt}}" >
 
                 </div>
               </a>
 
               <div class = "media-body">
-                  <h4 class = "media-heading">{{artist.name}}</h4>
+                  <h4 class = "media-heading">{{cleanName(artist.name)}}</h4>
               </div>
-              {{ artist.about }} 
+              {{ artist.about }} <a ng-href="{{ 'https://en.wikipedia.org/wiki/' + artist.name }}"> more</a>
             </div><!-- end media-->
           </div> <!-- for each artist-->
         </div>
