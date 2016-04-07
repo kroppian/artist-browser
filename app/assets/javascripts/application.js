@@ -39,9 +39,7 @@
 
     $scope.loadingImages = true;
 
-    $scope.artisticPeriods = [];
-
-    $scope.artisticPeriodsToFind = [
+    $scope.artisticPeriods = [
       {'name':'Impressionistic',
         'categoryPages':['American Impressionist painters', 'French Impressionist painters'],
         'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1200px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg',
@@ -56,7 +54,6 @@
      * sanity.
      */
     $scope.messageCategoryList = function(rawCatList){
-      console.log("++++");
       // geto the meat of the monstrosity
       rawCatList = rawCatList['*'][0].a['*'];
 
@@ -81,9 +78,13 @@
         
         // convert the artist JSON to 
         console.log("hello there! Looking for " + categoryToSearch);
-        console.log($scope.messageCategoryList(data));
+        data=$scope.messageCategoryList(data)
+        console.log(data);
         console.log("~~~~~~~~~"); 
-
+        for(i = 0; i < data.length; i++) {
+          $scope.artisticPeriods[period].artists.push(data[i]);
+        }
+        
       }).error(function(data,status,headers,config){
 
         // do nothing. Do not add any artist to the list
@@ -98,21 +99,20 @@
     /*
      * Main loop
      */
-    for(pInd = 0; pInd < $scope.artisticPeriodsToFind.length; pInd++){
+    for(pInd = 0; pInd < $scope.artisticPeriods.length; pInd++){
      
-      var period = $scope.artisticPeriodsToFind[pInd];
+      var period = $scope.artisticPeriods[pInd];
 
       for(cInd = 0; cInd < period.categoryPages.length; cInd++){
 
         var categoryPage = period.categoryPages[cInd];
        
         // change this to just pass the category name 
-        $scope.getAristList(period, cInd);
+        $scope.getAristList(pInd, cInd);
 
       }
 
     } // end -- Main loop
-
 
     /*$scope.neoclassicalArtistsStub = [
       {'name':'Jacques-Louis David', 'portraitSrc':'', 'portraitAlt':'David Self Portrait.jpg', 'about':'An influential French painter in the Neoclassical style, considered to be the preeminent painter of the era. In the 1780s his cerebral brand of history painting marked...' },
