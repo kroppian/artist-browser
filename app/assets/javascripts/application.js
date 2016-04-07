@@ -51,9 +51,14 @@
         'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1200px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg',
         'imgAlt':'Claude Monet, Impression, soleil levant.jpg',
         'artists': [],
-        'visible':false}
+        'visible':false},
+      {'name':'Cubist',
+        'categoryPages':['Cubist artists'],
+        'imgSrc':'https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/Pablo_Picasso%2C_1910%2C_Girl_with_a_Mandolin_%28Fanny_Tellier%29%2C_oil_on_canvas%2C_100.3_x_73.6_cm%2C_Museum_of_Modern_Art_New_York..jpg/1200px-Pablo_Picasso%2C_1910%2C_Girl_with_a_Mandolin_%28Fanny_Tellier%29%2C_oil_on_canvas%2C_100.3_x_73.6_cm%2C_Museum_of_Modern_Art_New_York..jpg',
+        'imgAlt':'Pablo Picasso, 1910, Girl with a Mandolin (Fanny Tellier), oil on canvas, 100.3 x 73.6 cm, Museum of Modern Art New York..jpg',
+        'artists': [],
+        'visible':false},
     ];
-
 
     /*
      * Take the nasty JSON of wikipedia categories and message the JSON back into 
@@ -61,8 +66,9 @@
      */
     $scope.messageCategoryList = function(rawCatList){
       // geto the meat of the monstrosity
+      console.log(rawCatList);
       rawCatList = rawCatList['*'][0].a['*'];
-
+      console.log(rawCatList.length);
       // replace each artist with the JSON format we're looking for
       return rawCatList.map(function(currentArt){
       
@@ -81,9 +87,9 @@
 
       $http.jsonp(categoryApiUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
-        
+         
         // convert the artist JSON to 
-        data=$scope.messageCategoryList(data)
+        data=$scope.messageCategoryList(data);
         for(artistInd = 0; artistInd < data.length; artistInd++) {
           $scope.artisticPeriods[period].artists.push(data[artistInd]);
           $scope.getThumbnail(artistInd,period );
