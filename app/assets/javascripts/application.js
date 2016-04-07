@@ -16,8 +16,8 @@
 //= require_tree .
 //= require bootstrap-sprockets
 //= require angular
+//= require angular-mocks
 
-// TODO make unit tests
 // TODO make more pretty getters with the objects
 
 (function(){
@@ -34,9 +34,9 @@
   }]);
 
 
-  adminApp.controller('artistBrowserController', function($scope,$http,$location){
+  adminApp.controller('artistBrowserController', function($scope,$http){
 
-
+    $scope.hiTest = "hello test!";
     $scope.loadingImages = true;
 
     $scope.artisticPeriods = [
@@ -139,7 +139,6 @@
          var pages = data.query.pages;
 
          // get the thumbnail of the first page found
-         // TODO if name is not found??
          if ( 'thumbnail' in pages[Object.keys(pages)[0]]){
          
            $scope.artisticPeriods[periodInd].artists[artistInd].portraitSrc = pages[Object.keys(pages)[0]].thumbnail.source;
@@ -148,7 +147,6 @@
 
       }).error(function(data,status,headers,config){
 
-        // TODO more than one error type?
         console.log("~~~");
         console.log("No thumbnail is available for artist" + $scope.artisticPeriods[periodInd].artists[artistInd].name);
         console.log("~~~");
@@ -167,7 +165,6 @@
          var pages = data.query.pages;
 
          // get the thumbnail of the first page found
-         // TODO if name is not found??
          if ( 'extract' in pages[Object.keys(pages)[0]]){
          
            $scope.artisticPeriods[periodInd].artists[artistInd].about = $scope.cleanAbout(pages[Object.keys(pages)[0]].extract);
@@ -176,7 +173,6 @@
 
       }).error(function(data,status,headers,config){
 
-        // TODO more than one error type?
         console.log("~~~");
         console.log("No thumbnail is available for artist" + $scope.artisticPeriods[periodInd].artists[artistInd].name);
         console.log("~~~");
@@ -223,3 +219,5 @@
   );
  
 })();
+
+
