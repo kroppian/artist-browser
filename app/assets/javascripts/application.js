@@ -26,7 +26,7 @@
 
   function ArtistList(){
 
-    this.getList = function(period, categoryToSearch, reformatCategories,thumbnail, about, $http){
+    this.populateList = function(period, categoryToSearch, reformatCategories,artistMetadata, $http){
     
       categoryApiUrl="https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=" + categoryToSearch + "&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK"
 
@@ -38,8 +38,8 @@
         for(artistInd = 0; artistInd < data.length; artistInd++) {
 
           period.artists.push(data[artistInd]);
-          thumbnail.setImgSrc(period, artistInd,$http);
-          about.setArtistAbout(period, artistInd,$http);
+          artistMetadata.setImgSrc(period, artistInd,$http);
+          artistMetadata.setArtistAbout(period, artistInd,$http);
 
         }
         
@@ -55,7 +55,7 @@
 
   } 
 
-  function Thumbnail(){
+  function ArtistMetadata(){
 
     this.setImgSrc = function(period, artistInd, $http){
    
@@ -66,7 +66,7 @@
 
          var pages = data.query.pages;
 
-         // get the thumbnail of the first page found
+         // get the artistMetadata of the first page found
          if ( 'thumbnail' in pages[Object.keys(pages)[0]]){
          
            period.artists[artistInd].portraitSrc = pages[Object.keys(pages)[0]].thumbnail.source;
@@ -83,13 +83,9 @@
     
     } 
 
-  }
-
-  function About(){
-
     this.setArtistAbout = function(period, artistInd, $http){
     
-      // return our page name in the thumbnail url
+      // return our page name in the artistMetadata url
       var artistName = period.artists[artistInd].name;
       imageMetadataUrl='https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=' + artistName;
       $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
@@ -97,7 +93,7 @@
 
          var pages = data.query.pages;
 
-         // get the thumbnail of the first page found
+         // get the artistMetadata of the first page found
          if ( 'extract' in pages[Object.keys(pages)[0]]){
 
            var rawExtract = pages[Object.keys(pages)[0]].extract;
@@ -113,7 +109,7 @@
       }).error(function(data,status,headers,config){
 
         console.log("~~~");
-        console.log("No thumbnail is available for artist" + period.artists[artistInd].name);
+        console.log("No artistMetadata is available for artist" + period.artists[artistInd].name);
         console.log("~~~");
 
       });
@@ -139,7 +135,7 @@
         
           return {'name':currentArt.title,
             'portraitSrc':'/assets/Tripod_easel.jpg',
-            'portraitAlt':'Artist Thumbnail',
+            'portraitAlt':'Artist ArtistMetadata',
             'about':'A god damn good artist!'}
         
         });
@@ -150,9 +146,8 @@
 
   });
 
-  module.service("thumbnail",Thumbnail);
+  module.service("artistMetadata",ArtistMetadata);
   module.service("artistList",ArtistList);
-  module.service("about",About);
 
   module.config(['$httpProvider',function($httpProvider){
 
@@ -163,7 +158,7 @@
 
   }]);
 
-  module.controller('artistBrowserController', function($scope,artistList,reformatCategories, thumbnail, about,$http){
+  module.controller('artistBrowserController', function($scope, artistList, reformatCategories, artistMetadata, $http){
 
     $scope.loadingImages = true;
 
@@ -202,7 +197,7 @@
         var categoryPage = period.categoryPages[cInd];
        
         // change this to just pass the category name 
-        artistList.getList(period, categoryPage,reformatCategories,thumbnail,about,$http);
+        artistList.populateList(period, categoryPage,reformatCategories,artistMetadata,$http);
 
 
       }
