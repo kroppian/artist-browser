@@ -22,9 +22,139 @@
 
 (function(){
 
-  var Module = angular.module('artist-browser', []);
+  var module = angular.module('artist-browser', []);
 
-  Module.config(['$httpProvider',function($httpProvider){
+  function ArtistList(){
+
+    this.getList = function(period, categoryToSearch, reformatCategories,thumbnail, about, $http){
+    
+      categoryApiUrl="https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=" + categoryToSearch + "&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK"
+
+      $http.jsonp(categoryApiUrl,{headers:{"Accept":"application/json;charset=utf-8",
+        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
+         
+        // convert the artist JSON to 
+        data=reformatCategories.reformat(data);
+        for(artistInd = 0; artistInd < data.length; artistInd++) {
+
+          period.artists.push(data[artistInd]);
+          thumbnail.setImgSrc(period, artistInd,$http);
+          about.setArtistAbout(period, artistInd,$http);
+
+        }
+        
+      }).error(function(data,status,headers,config){
+
+        // do nothing. Do not add any artist to the list
+        console.log("Failed to find " + categoryToSearch + "...");
+
+      });
+         
+    
+    }
+
+  } 
+
+  function Thumbnail(){
+
+    this.setImgSrc = function(period, artistInd, $http){
+   
+      var artistName = period.artists[artistInd].name;
+      imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK&';
+      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
+        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
+
+         var pages = data.query.pages;
+
+         // get the thumbnail of the first page found
+         if ( 'thumbnail' in pages[Object.keys(pages)[0]]){
+         
+           period.artists[artistInd].portraitSrc = pages[Object.keys(pages)[0]].thumbnail.source;
+
+         }
+
+      }).error(function(data,status,headers,config){
+
+        console.log("~~~");
+        console.log("No thumbnail is available for artist" + period.artists[artistInd].name);
+        console.log("~~~");
+
+      });
+    
+    } 
+
+  }
+
+  function About(){
+
+    this.setArtistAbout = function(period, artistInd, $http){
+    
+      // return our page name in the thumbnail url
+      var artistName = period.artists[artistInd].name;
+      imageMetadataUrl='https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=' + artistName;
+      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
+        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
+
+         var pages = data.query.pages;
+
+         // get the thumbnail of the first page found
+         if ( 'extract' in pages[Object.keys(pages)[0]]){
+
+           var rawExtract = pages[Object.keys(pages)[0]].extract;
+
+           period.artists[artistInd].about = rawExtract.replace(
+             /\([^)]*\)/,'').substring(
+               0,170).replace(
+                 / \w+$/,'') + "...";
+
+
+         }
+
+      }).error(function(data,status,headers,config){
+
+        console.log("~~~");
+        console.log("No thumbnail is available for artist" + period.artists[artistInd].name);
+        console.log("~~~");
+
+      });
+    
+    }  
+
+  }
+
+  /*
+   * Take the nasty JSON of wikipedia categories and message the JSON back into 
+   * sanity.
+   */
+  module.factory("reformatCategories",function(){
+
+    return {
+      
+      reformat: function(rawCatList){
+
+        // geto the meat of the monstrosity
+        rawCatList = rawCatList['*'][0].a['*'];
+        // replace each artist with the JSON format we're looking for
+        return rawCatList.map(function(currentArt){
+        
+          return {'name':currentArt.title,
+            'portraitSrc':'/assets/Tripod_easel.jpg',
+            'portraitAlt':'Artist Thumbnail',
+            'about':'A god damn good artist!'}
+        
+        });
+      
+      } 
+    
+    }
+
+  });
+
+  module.service("thumbnail",Thumbnail);
+  module.service("artistList",ArtistList);
+  module.service("about",About);
+
+  module.config(['$httpProvider',function($httpProvider){
 
     $httpProvider.defaults.headers.get = {
       "Accept":"application/json;charset=utf-8",
@@ -33,8 +163,7 @@
 
   }]);
 
-
-  Module.controller('artistBrowserController', function($scope,$http){
+  module.controller('artistBrowserController', function($scope,artistList,reformatCategories, thumbnail, about,$http){
 
     $scope.loadingImages = true;
 
@@ -58,54 +187,8 @@
         'artists': [],
         'visible':false},
     ];
-
-    /*
-     * Take the nasty JSON of wikipedia categories and message the JSON back into 
-     * sanity.
-     */
-    $scope.messageCategoryList = function(rawCatList){
-      // geto the meat of the monstrosity
-      rawCatList = rawCatList['*'][0].a['*'];
-      // replace each artist with the JSON format we're looking for
-      return rawCatList.map(function(currentArt){
-      
-        return {'name':currentArt.title,
-          'portraitSrc':'/assets/Tripod_easel.jpg',
-          'portraitAlt':'Artist Thumbnail',
-          'about':'A god damn good artist!'}
-      
-      });
-
-    }
-
-    $scope.getArtistList = function(period, categoryToSearch){
-  
-      categoryApiUrl="https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=" + categoryToSearch + "&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK"
-
-      $http.jsonp(categoryApiUrl,{headers:{"Accept":"application/json;charset=utf-8",
-        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
-         
-        // convert the artist JSON to 
-        data=$scope.messageCategoryList(data);
-        for(artistInd = 0; artistInd < data.length; artistInd++) {
-
-          period.artists.push(data[artistInd]);
-          $scope.getThumbnail(period, artistInd);
-          $scope.getAbout(period, artistInd);
-
-        }
-        
-      }).error(function(data,status,headers,config){
-
-        // do nothing. Do not add any artist to the list
-        console.log("Failed to find " + categoryToSearch + "...");
-
-      });
-         
-
-    } 
-
     
+    $scope.hiTest = "hello test!";
 
     /*
      * Main loop
@@ -119,75 +202,12 @@
         var categoryPage = period.categoryPages[cInd];
        
         // change this to just pass the category name 
-        $scope.getArtistList(period, categoryPage);
+        artistList.getList(period, categoryPage,reformatCategories,thumbnail,about,$http);
 
 
       }
 
     } // end -- Main loop
-
-    $scope.getThumbnail = function(period, artistInd ){
-    // sanitize artist name
-    // return our page name in the thumbnail url
-      var artistName = period.artists[artistInd].name;
-      imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK&';
-      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
-        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
-
-         var pages = data.query.pages;
-
-         // get the thumbnail of the first page found
-         if ( 'thumbnail' in pages[Object.keys(pages)[0]]){
-         
-           period.artists[artistInd].portraitSrc = pages[Object.keys(pages)[0]].thumbnail.source;
-
-         }
-
-      }).error(function(data,status,headers,config){
-
-        console.log("~~~");
-        console.log("No thumbnail is available for artist" + period.artists[artistInd].name);
-        console.log("~~~");
-
-      });
-    };
-
-    $scope.getAbout = function(period,artistInd ){
-
-    // return our page name in the thumbnail url
-      var artistName = period.artists[artistInd].name;
-      imageMetadataUrl='https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=' + artistName;
-      $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
-        "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
-
-         var pages = data.query.pages;
-
-         // get the thumbnail of the first page found
-         if ( 'extract' in pages[Object.keys(pages)[0]]){
-         
-           period.artists[artistInd].about = $scope.cleanAbout(pages[Object.keys(pages)[0]].extract);
-
-         }
-
-      }).error(function(data,status,headers,config){
-
-        console.log("~~~");
-        console.log("No thumbnail is available for artist" + period.artists[artistInd].name);
-        console.log("~~~");
-
-      });
-    };
-
-    $scope.cleanAbout = function(name){
-
-
-      return name.replace(
-          /\([^)]*\)/,'').substring(
-            0,170).replace(
-              / \w+$/,'') + "...";
-    
-    }
-
 
     $scope.cleanName = function(name){
 
@@ -213,7 +233,6 @@
 
 
   }); // end -- artistBrowserController
- 
+
+
 })();
-
-

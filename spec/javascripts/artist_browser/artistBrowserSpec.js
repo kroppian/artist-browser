@@ -2,7 +2,10 @@
 
 describe('artistBrowserController', function() {
 
-    beforeEach(module('artist-browser'));
+    beforeEach(function(){
+      module('artist-browser');
+    });
+
     var $scope, testRootScope;
 
     describe('opening main page the first time', function() {
