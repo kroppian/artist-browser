@@ -128,14 +128,32 @@
       
       reformat: function(rawCatList){
 
-        // geto the meat of the monstrosity
+        //if (typeof(rawCatList) != 'object' || 
+        //    Object.keys(rawCatList).length == 0 || 
+        //    ! Array.isArray(rawCatList['*'][0].a['*'])){
+
+        if (typeof(rawCatList) == 'undefined' ||
+          typeof(rawCatList['*']) == 'undefined' || 
+          typeof(rawCatList['*'][0]) == 'undefined' ||
+          typeof(rawCatList['*'][0].a) == 'undefined' ||
+          typeof(rawCatList['*'][0].a['*']) == 'undefined' ||
+          ! Array.isArray(rawCatList['*'][0].a['*'])){
+            
+          console.log('WARNING: Returning empty String due to bad parameter given to' +
+              'reformatCategories ');
+
+          return [];
+         
+        }
+
+        // ge to the meat of the monstrosity
         rawCatList = rawCatList['*'][0].a['*'];
         // replace each artist with the JSON format we're looking for
-        return rawCatList.map(function(currentArt){
+        return rawCatList.map(function(currentArtist){
         
-          return {'name':currentArt.title,
+          return {'name':currentArtist.title,
             'portraitSrc':'/assets/Tripod_easel.jpg',
-            'portraitAlt':'Artist ArtistMetadata',
+            'portraitAlt':'Artist Thumbnail',
             'about':'A god damn good artist!'}
         
         });
