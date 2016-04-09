@@ -85,20 +85,6 @@ describe('artistBrowserController', function() {
 
         }); // end -- should call artistLists on creation of controller.
 
-        it('should display the name of the artists on the page', function () {
-
-          /*var artists = ['Berthe Morisot', 'Claude Monet', 'Camille Pissarro', 'Antoine Guillemet', 'Étienne Buffet'];
-          console.log($('h4')); 
-          for(var i = 0; i < artists.length; i++){
-            console.log(artists[i]); 
-            //expect($('<h4 class = "media-heading">' + artists[i] + '</h4>')).toExist();
-            expect($('h4')).toExist();
-
-          }*/
-          // TODO get this to work
-
-        }); // end -- should display the name of the artists on the page
-
     }); // end -- opening main page the first time
 
     /*
@@ -180,6 +166,8 @@ describe('artistBrowserController', function() {
         }); // end -- reformat works with well formatted json
 
     }); // end -- describe reformat works with well formatted json
+
+    // TODO other functions in the controller 
 
 }); // end -- artistBrowserController
 

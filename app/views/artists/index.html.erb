@@ -1,19 +1,32 @@
 <div class="container">
   <div class="page-header">
-    <h1>Browse Art</h1>
+    <h1>Browse Artists</h1>
   </div>
+  <h3>Click on the eras below to search artists!</h3>
 
-
-  <div ng-repeat="period in artisticPeriods" >
+  <!-- for each period -->
+  <div ng-hide="loading" ng-repeat="period in artisticPeriods" >
 
     <!-- Period example --> 
-    <div class="row widescreen-image-frame" ng-click="switchPeriod(period);">
-      <div class="col-md-12">
+    <div class ='row'>
+      <div class="col-md-12"  >
+        <!-- Background element to provide the shading when hovering over artistic periods-->
+        <figure class='tint'>
 
-      <img class="widescreen-image" alt="{{period.imgAlt}}" ng-src="{{period.imgSrc}}">
+          <!-- Grey out image when hover, and display title when hovering-->
+          <div class="widescreen-image-frame" 
+               ng-click="switchPeriod(period);" 
+               ng-mouseenter="period.fade = true" 
+               ng-mouseleave="period.fade = false" 
+               ng-class="{ 'display-title': period.fade  }"
+               ng-style="{ 'background-image': 'url(' + period.imgSrc + ')' }" >
 
+            <h1 class="period-title" ng-show="period.fade">{{ period.name }}</h1>
+
+          </div> <!-- period example -->
+        </figure>
       </div>
-    </div> <!-- period example -->
+    </div>
 
     <!-- Artist serach box-->
     <div class="row" ng-show="period.visible">
