@@ -31,15 +31,13 @@
 
       $http.jsonp(categoryApiUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
- 
-        // convert the artist JSON to 
         data=reformatCategories.reformat(data);
         for(artistInd = 0; artistInd < data.length; artistInd++) {
 
           period.artists.push(data[artistInd]);
           artistMetadata.setImgSrc(period, artistInd,$http);
           artistMetadata.setArtistAbout(period, artistInd,$http);
-  
+       
         }
         
       }).error(function(data,status,headers,config){
@@ -62,7 +60,6 @@
       imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK';
       $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
-
          var pages = data.query.pages;
 
          // get the artistMetadata of the first page found
@@ -89,7 +86,7 @@
       imageMetadataUrl='https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=' + artistName;
       $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
-
+  
          var pages = data.query.pages;
 
          // get the artistMetadata of the first page found
@@ -98,9 +95,11 @@
            var rawExtract = pages[Object.keys(pages)[0]].extract;
 
            period.artists[artistInd].about = rawExtract.replace(
-             /\([^)]*\)/,'').substring(
-               0,170).replace(
-                 / \w+$/,'') + "...";
+              // Get rid of pronounciation blurbs
+              / \([^)]*\) /,' ').substring(
+                // Grab just the first words that fit under 170 characters
+                0,170).replace(
+                  / \w+$/,'') + "...";
 
 
          }
@@ -211,7 +210,6 @@
        
         // change this to just pass the category name 
         artistList.populateList(period, categoryPage,reformatCategories,artistMetadata,$http);
-
 
       }
 

@@ -6,6 +6,8 @@ var staticArtistAbout = {"batchcomplete":"","query":{"normalized":[{"from":"Bert
 
 var staticAristThumb = {"batchcomplete":"","query":{"normalized":[{"from":"Berthe_Morisot","to":"Berthe Morisot"}],"pages":{"4233":{"pageid":4233,"ns":0,"title":"Berthe Morisot","thumbnail":{"source":"https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg/100px-Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg","width":100,"height":83},"pageimage":"Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg"}}}};
 
+
+
 describe('artistBrowserController', function() {
 
     beforeEach(function(){
@@ -20,7 +22,6 @@ describe('artistBrowserController', function() {
 
             ctrlScope = $rootScope.$new();
 
-
             httpBackend = $httpBackend;
 
             _artistList = artistList;
@@ -32,34 +33,71 @@ describe('artistBrowserController', function() {
             spyOn(artistMetadata,'setImgSrc').and.callThrough();
 
 
-            // TODO make this multiline
-            httpBackend.whenJSONP(/https:\/\/petscan.wmflabs.org\/\?language=en&project=wikipedia&depth=0&categories=.*&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK/)
-              .respond(staticCategories);
+            // TODO make the regex multiline
+            var categoryApiUrl=/https:\/\/petscan.wmflabs.org\/\?language=en&project=wikipedia&depth=0&categories=.*&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK/;
+            httpBackend.whenJSONP(categoryApiUrl).respond(staticCategories);
 
-            httpBackend.whenJSONP(/https:\/\/en.wikipedia.org\/w\/api.php\?action=query&titles=.*&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK/)
-              .respond(staticArtistAbout);
+            var thumbnailApiUrl=/https:\/\/en.wikipedia.org\/w\/api.php\?action=query&titles=.*&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK/;
+            httpBackend.whenJSONP(thumbnailApiUrl).respond(staticAristThumb);
 
-            httpBackend.whenJSONP(/https:\/\/en.wikipedia.org\/w\/api.php\?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=.*/)
-              .respond(staticAristThumb);
-
-
-            //httpBackend.whenJSONP('https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=French neoclassical painters&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK').respond(staticCategories);
-            //httpBackend.whenJSONP('www.bob.com').respond(staticCategories);
+            var aboutApiUrl=/https:\/\/en.wikipedia.org\/w\/api.php\?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=.*/;
+            httpBackend.whenJSONP(aboutApiUrl).respond(staticArtistAbout);
 
             $controller('artistBrowserController', {$scope: ctrlScope, 
                 artistList: _artistList, reformatCategories: _reformatCategories, 
-                artistMetadata: _artistMetadata,});
+                artistMetadata: _artistMetadata});
+
 
         })); // end -- beforeEach
 
-        it('should call artistLists on creation of controller.', function () {
+        it('should call artistLists to populate the artistic periods on creation of controller.', function () {
 
           expect(_artistList.populateList).toHaveBeenCalled();
-          expect(ctrlScope.artisticPeriods.length).toBe(3);
-          //expect(ctrlScope.artisticPeriods[0].artists).toEqual(3);
-
           httpBackend.flush();
+          expect(ctrlScope.artisticPeriods.length).toBe(3);
+          
+          for(var i = 0; i < ctrlScope.artisticPeriods.length; i++){
+
+            expect(ctrlScope.artisticPeriods[i].artists).toEqual(
+              [{'name':'Berthe_Morisot',
+              'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg/100px-Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg',
+              'portraitAlt':'Artist Thumbnail',
+              'about':'Berthe Marie Pauline Morisot was a painter and a member of the circle of painters in Paris who became known as the Impressionists. She was described by Gustave Geffroy...'},
+              {'name':'Claude_Monet',
+              'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg/100px-Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg',
+              'portraitAlt':'Artist Thumbnail',
+              'about':'Berthe Marie Pauline Morisot was a painter and a member of the circle of painters in Paris who became known as the Impressionists. She was described by Gustave Geffroy...'},
+              {'name':'Camille_Pissarro',
+              'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg/100px-Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg',
+              'portraitAlt':'Artist Thumbnail',
+              'about':'Berthe Marie Pauline Morisot was a painter and a member of the circle of painters in Paris who became known as the Impressionists. She was described by Gustave Geffroy...'},
+              {'name':'Antoine_Guillemet',
+              'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg/100px-Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg',
+              'portraitAlt':'Artist Thumbnail',
+              'about':'Berthe Marie Pauline Morisot was a painter and a member of the circle of painters in Paris who became known as the Impressionists. She was described by Gustave Geffroy...'},
+              {'name':'Étienne_Buffet',
+              'portraitSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg/100px-Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg',
+              'portraitAlt':'Artist Thumbnail',
+              'about':'Berthe Marie Pauline Morisot was a painter and a member of the circle of painters in Paris who became known as the Impressionists. She was described by Gustave Geffroy...'},
+              ]
+            );
+          } 
+
         }); // end -- should call artistLists on creation of controller.
+
+        it('should display the name of the artists on the page', function () {
+
+          /*var artists = ['Berthe Morisot', 'Claude Monet', 'Camille Pissarro', 'Antoine Guillemet', 'Étienne Buffet'];
+          console.log($('h4')); 
+          for(var i = 0; i < artists.length; i++){
+            console.log(artists[i]); 
+            //expect($('<h4 class = "media-heading">' + artists[i] + '</h4>')).toExist();
+            expect($('h4')).toExist();
+
+          }*/
+          // TODO get this to work
+
+        }); // end -- should display the name of the artists on the page
 
     }); // end -- opening main page the first time
 
@@ -77,7 +115,6 @@ describe('artistBrowserController', function() {
 
         // TODO blank artist names?
         it('returns an empty array if given the kitchen sink (non objects)',function(){
-          console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
           expect(_reformatCategories.reformat(44)).toEqual([]); 
 
           expect(_reformatCategories.reformat("asdfad")).toEqual([]); 
