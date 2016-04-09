@@ -18,7 +18,7 @@
 //= require angular
 //= require angular-mocks
 
-// TODO make more pretty getters with the objects
+
 
 (function(){
 
@@ -39,7 +39,7 @@
           artistMetadata.setArtistAbout(period, artistInd,$http);
        
         }
-        
+
       }).error(function(data,status,headers,config){
 
         // do nothing. Do not add any artist to the list
@@ -55,7 +55,7 @@
   function ArtistMetadata(){
 
     this.setImgSrc = function(period, artistInd, $http){
-   
+  
       var artistName = period.artists[artistInd].name;
       imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK';
       $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
@@ -68,7 +68,7 @@
            period.artists[artistInd].portraitSrc = pages[Object.keys(pages)[0]].thumbnail.source;
 
          }
-
+  
       }).error(function(data,status,headers,config){
 
         console.log("~~~");
@@ -80,13 +80,13 @@
     } 
 
     this.setArtistAbout = function(period, artistInd, $http){
-    
+   
       // return our page name in the artistMetadata url
       var artistName = period.artists[artistInd].name;
       imageMetadataUrl='https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=' + artistName;
       $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
-  
+ 
          var pages = data.query.pages;
 
          // get the artistMetadata of the first page found
@@ -175,6 +175,7 @@
 
   module.controller('artistBrowserController', function($scope, artistList, reformatCategories, artistMetadata, $http){
 
+
     $scope.artisticPeriods = [
       {'name':'Neoclassical',
         'categoryPages':['French neoclassical painters'],
@@ -214,7 +215,7 @@
         var categoryPage = period.categoryPages[cInd];
        
         // change this to just pass the category name 
-        artistList.populateList(period, categoryPage,reformatCategories,artistMetadata,$http);
+        var listFetched = artistList.populateList(period, categoryPage,reformatCategories,artistMetadata,$http);
 
       }
 

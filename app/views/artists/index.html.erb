@@ -1,10 +1,10 @@
 <div class="container">
   <div class="page-header">
-    <h1>Browse Art</h1>
+    <h1>Browse Artists</h1>
   </div>
 
 
-  <div ng-repeat="period in artisticPeriods" >
+  <div ng-hide="loading" ng-repeat="period in artisticPeriods" >
 
     <!-- Period example --> 
     <div class ='row'>
