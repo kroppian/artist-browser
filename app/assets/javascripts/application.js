@@ -175,7 +175,6 @@
 
   module.controller('artistBrowserController', function($scope, artistList, reformatCategories, artistMetadata, $http){
 
-    $scope.loadingImages = true;
     $scope.artisticPeriods = [
       {'name':'Neoclassical',
         'categoryPages':['French neoclassical painters'],
@@ -183,21 +182,24 @@
         'imgAlt':'Jacques-Louis David - Oath of the Horatii - Google Art Project.jpg',
         'artists': [],
         'visible':false,
-        'fade':false},
+        'fade':false,
+        'searchQuery':''},
       {'name':'Impressionistic',
         'categoryPages':['French Impressionist painters'],
         'imgSrc':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1200px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg',
         'imgAlt':'Claude Monet, Impression, soleil levant.jpg',
         'artists': [],
         'visible':false,
-        'fade':false},
+        'fade':false,
+        'searchQuery':''},
       {'name':'Cubist',
         'categoryPages':['Cubist artists'],
         'imgSrc':'https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/Pablo_Picasso%2C_1910%2C_Girl_with_a_Mandolin_%28Fanny_Tellier%29%2C_oil_on_canvas%2C_100.3_x_73.6_cm%2C_Museum_of_Modern_Art_New_York..jpg/1200px-Pablo_Picasso%2C_1910%2C_Girl_with_a_Mandolin_%28Fanny_Tellier%29%2C_oil_on_canvas%2C_100.3_x_73.6_cm%2C_Museum_of_Modern_Art_New_York..jpg',
         'imgAlt':'Pablo Picasso, 1910, Girl with a Mandolin (Fanny Tellier), oil on canvas, 100.3 x 73.6 cm, Museum of Modern Art New York..jpg',
         'artists': [],
         'visible':false,
-        'fade':false},
+        'fade':false,
+        'searchQuery':''},
     ];
 
     /*

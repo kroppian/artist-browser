@@ -2,7 +2,7 @@
       <div class="col-md-3">
         <h4>Search {{period.name}} artists</h4>
         <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search for...">
+        <input type="text" class="form-control" placeholder="Search for..." ng-model="period.searchQuery">
         </div><!-- /input-group -->
       </div> <!-- end search bar-->
 
@@ -12,7 +12,7 @@
         <div class="artist-query">
 
           <!-- for each artist-->
-          <div ng-repeat="artist in period.artists">
+          <div ng-repeat="artist in period.artists | filter : period.searchQuery">
 
             <div class="media arist-query-result-row">
               <a class="pull-left" ng-href = "{{ 'https://en.wikipedia.org/wiki/' + artist.name }}">
