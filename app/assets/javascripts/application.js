@@ -24,18 +24,29 @@
 
   var module = angular.module('artist-browser', []);
 
+  /*
+   * Service for getting a list of artists for given category. Also calls other 
+   * services to get thumbnails and about information from wikpedia
+   */
   function ArtistList(){
 
     this.populateList = function(period, categoryToSearch, reformatCategories,artistMetadata, $http){
       categoryApiUrl="https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=" + categoryToSearch + "&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK"
 
+      // try to get list of artists for given category
       $http.jsonp(categoryApiUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
+
+        // reformat the data given by the api into JSON we can work with
         data=reformatCategories.reformat(data);
+
+        // and for each artist in the given category, get the necessary information on them
         for(artistInd = 0; artistInd < data.length; artistInd++) {
 
           period.artists.push(data[artistInd]);
+          // get the thumbnail image
           artistMetadata.setImgSrc(period, artistInd,$http);
+          // get the about information
           artistMetadata.setArtistAbout(period, artistInd,$http);
        
         }
@@ -46,14 +57,17 @@
         console.log("Failed to find " + categoryToSearch + "...");
 
       });
-         
     
     }
 
-  } 
+  } // end -- ArtistList 
 
+  /*
+   * Service to get metadata about the given artist (thumbnail and image url)
+   */
   function ArtistMetadata(){
 
+    // get the image source
     this.setImgSrc = function(period, artistInd, $http){
   
       var artistName = period.artists[artistInd].name;
@@ -114,11 +128,11 @@
     
     }  
 
-  }
+  } // end -- ArtistMetadata
 
   /*
    * Take the nasty JSON of wikipedia categories and message the JSON back into 
-   * sanity.
+   * sanity. See the specs for more details
    */
   module.factory("reformatCategories",function(){
 
@@ -176,6 +190,12 @@
   module.controller('artistBrowserController', function($scope, artistList, reformatCategories, artistMetadata, $http){
 
 
+    /*
+     * Main model of the page. Represents all of the eras on the page and what artists belong to them. 
+     *
+     * Also acts as a seed to tell the controller which categories to search for. 
+     *
+     */
     $scope.artisticPeriods = [
       {'name':'Neoclassical',
         'categoryPages':['French neoclassical painters'],
@@ -204,12 +224,13 @@
     ];
 
     /*
-     * Main loop
+     * Main loop to populate artisticPeriods
      */
     for(pInd = 0; pInd < $scope.artisticPeriods.length; pInd++){
      
       var period = $scope.artisticPeriods[pInd];
 
+      // for each category 
       for(cInd = 0; cInd < period.categoryPages.length; cInd++){
 
         var categoryPage = period.categoryPages[cInd];
@@ -221,12 +242,22 @@
 
     } // end -- Main loop
 
+    /*
+     * Gets rid of the underscores in wikipedia page titles, along with any subtitle
+     * pertaining to their profession.
+     */
     $scope.cleanName = function(name){
 
       return name.replace(/_/g,' ').replace(/(Artist)/g,'')
     
     }
 
+    /*
+     * Opens and closes the period search areas. Opens on click, closes on click. 
+     *
+     * Also, only one era can be open at a time.
+     *
+     */
     $scope.switchPeriod = function(period){
 
       var wasVisible = period.visible;
