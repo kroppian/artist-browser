@@ -181,5 +181,7 @@ describe('artistBrowserController', function() {
 
     }); // end -- describe reformat works with well formatted json
 
+    // TODO other functions in the controller 
+
 }); // end -- artistBrowserController
 

@@ -7,14 +7,19 @@
   <div ng-repeat="period in artisticPeriods" >
 
     <!-- Period example --> 
-    <div class="row widescreen-image-frame" ng-click="switchPeriod(period);">
+    <div class ='row'>
       <div class="col-md-12">
+        <div class="widescreen-image-frame" 
+             ng-click="switchPeriod(period);" 
+             ng-mouseenter="period.fade = true" 
+             ng-mouseleave="period.fade = false" 
+             ng-class="{ 'display-title': period.fade  }">
 
-      <img class="widescreen-image" alt="{{period.imgAlt}}" ng-src="{{period.imgSrc}}">
+          <img class="widescreen-image" alt="{{period.imgAlt}}" ng-src="{{period.imgSrc}}">
 
+        </div> <!-- period example -->
       </div>
-    </div> <!-- period example -->
-
+    </div>
     <!-- Artist serach box-->
     <div class="row" ng-show="period.visible">
       <%= render 'search' %>
