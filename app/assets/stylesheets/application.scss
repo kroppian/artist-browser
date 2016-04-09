@@ -18,29 +18,30 @@
 
 
 .widescreen-image-frame {
-  
-  max-height: 200px;
+
+  height: 200px;
   overflow:hidden;
+  cursor:pointer;
+  background-position:relative;
 }
 
-.widescreen-image {
+.tint{
 
-  max-width:100%;
-  position:relative;
-  bottom:250px;
-  cursor:pointer;
+  background:black;
 
 }
 
 .display-title {
 
-  opacity: 0.2;
+  opacity: 0.4;
 
 }
 
 .period-title {
 
   position:relative;
+  color:white;
+  text-align:center;
 
 }
 
