@@ -27,12 +27,11 @@
   function ArtistList(){
 
     this.populateList = function(period, categoryToSearch, reformatCategories,artistMetadata, $http){
-    
       categoryApiUrl="https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=" + categoryToSearch + "&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK"
 
       $http.jsonp(categoryApiUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
-         
+ 
         // convert the artist JSON to 
         data=reformatCategories.reformat(data);
         for(artistInd = 0; artistInd < data.length; artistInd++) {
@@ -40,7 +39,7 @@
           period.artists.push(data[artistInd]);
           artistMetadata.setImgSrc(period, artistInd,$http);
           artistMetadata.setArtistAbout(period, artistInd,$http);
-
+  
         }
         
       }).error(function(data,status,headers,config){
@@ -60,7 +59,7 @@
     this.setImgSrc = function(period, artistInd, $http){
    
       var artistName = period.artists[artistInd].name;
-      imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK&';
+      imageMetadataUrl='https://en.wikipedia.org/w/api.php?action=query&titles=' + artistName + '&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK';
       $http.jsonp(imageMetadataUrl,{headers:{"Accept":"application/json;charset=utf-8",
         "Accept-Charset":"charset=utf-8"}}).success(function(data,status,headers,config){
 
@@ -131,7 +130,6 @@
         //if (typeof(rawCatList) != 'object' || 
         //    Object.keys(rawCatList).length == 0 || 
         //    ! Array.isArray(rawCatList['*'][0].a['*'])){
-
         if (typeof(rawCatList) == 'undefined' ||
           typeof(rawCatList['*']) == 'undefined' || 
           typeof(rawCatList['*'][0]) == 'undefined' ||
@@ -179,7 +177,6 @@
   module.controller('artistBrowserController', function($scope, artistList, reformatCategories, artistMetadata, $http){
 
     $scope.loadingImages = true;
-
     $scope.artisticPeriods = [
       {'name':'Neoclassical',
         'categoryPages':['French neoclassical painters'],
@@ -200,8 +197,6 @@
         'artists': [],
         'visible':false},
     ];
-    
-    $scope.hiTest = "hello test!";
 
     /*
      * Main loop

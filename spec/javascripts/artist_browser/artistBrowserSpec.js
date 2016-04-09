@@ -2,6 +2,10 @@
 
 var staticCategories = {"n":"result","a":{"querytime_sec":0.015164,"query":"https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=French%20Impressionist%20painters&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_output"},"*":[{"n":"combination","a":{"type":"subset","*":[{"id":4233,"len":38352,"n":"page","namespace":0,"nstext":"","title":"Berthe_Morisot","touched":"20160405223414"}, {"id":6548,"len":49435,"n":"page","namespace":0,"nstext":"","title":"Claude_Monet","touched":"20160407202909"}, {"id":7434,"len":48292,"n":"page","namespace":0,"nstext":"","title":"Camille_Pissarro","touched":"20160407204606"}, {"id":47454019,"len":11649,"n":"page","namespace":0,"nstext":"","title":"Antoine_Guillemet","touched":"20160405223414"}, {"id":49052643,"len":6631,"n":"page","namespace":0,"nstext":"","title":"Étienne_Buffet","touched":"20160405223414"}]}}]};
 
+var staticArtistAbout = {"batchcomplete":"","query":{"normalized":[{"from":"Berthe_Morisot","to":"Berthe Morisot"}],"pages":{"4233":{"pageid":4233,"ns":0,"title":"Berthe Morisot","extract":"Berthe Marie Pauline Morisot (French: [m\u0254\u0281izo]; January 14, 1841 \u2013 March 2, 1895) was a painter and a member of the circle of painters in Paris who became known as the Impressionists. She was described by Gustave Geffroy in 1894 as one of \"les trois grandes dames\" of Impressionism alongside Marie Bracquemond and Mary Cassatt.\nIn 1864, she exhibited for the first time in the highly esteemed Salon de Paris. Sponsored by the government, and judged by Academicians, the Salon was the official, annual exhibition of the Acad\u00e9mie des beaux-arts in Paris. Her work was selected for exhibition in six subsequent Salons until, in 1874, she joined the \"rejected\" Impressionists in the first of their own exhibitions, which included Paul C\u00e9zanne, Edgar Degas, Claude Monet, Camille Pissarro, Pierre-Auguste Renoir, and Alfred Sisley. It was held at the studio of the photographer Nadar.\nShe was married to Eug\u00e8ne Manet, the brother of her friend and colleague \u00c9douard Manet."}}}};
+
+var staticAristThumb = {"batchcomplete":"","query":{"normalized":[{"from":"Berthe_Morisot","to":"Berthe Morisot"}],"pages":{"4233":{"pageid":4233,"ns":0,"title":"Berthe Morisot","thumbnail":{"source":"https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg/100px-Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg","width":100,"height":83},"pageimage":"Morisot_TheArtistsDaughterJulieWithHerNanny_MIA_9640.jpg"}}}};
+
 describe('artistBrowserController', function() {
 
     beforeEach(function(){
@@ -17,28 +21,30 @@ describe('artistBrowserController', function() {
             ctrlScope = $rootScope.$new();
 
 
-            httpBackend = $httpBackend
+            httpBackend = $httpBackend;
 
             _artistList = artistList;
             _reformatCategories = reformatCategories;
             _artistMetadata = artistMetadata;
 
-            /*spyOn(artistList,'populateList').andCallThrough();
-            spyOn(reformatCategories,'reformat').andCallThrough();
-            spyOn(artistMetadata,'setArtistAbout').andCallThrough();
-            spyOn(artistMetadata,'setImgSrc').andCallThrough();*/
-
-            spyOn(artistList,'populateList');
-            //spyOn(reformatCategories,'reformat');
-            spyOn(artistMetadata,'setArtistAbout');
-            spyOn(artistMetadata,'setImgSrc');
+            spyOn(artistList,'populateList').and.callThrough();
+            spyOn(artistMetadata,'setArtistAbout').and.callThrough();
+            spyOn(artistMetadata,'setImgSrc').and.callThrough();
 
 
             // TODO make this multiline
-            httpBackend.expectGET(/.*petscan.wmflabs.org\/?language=en&project=wikipedia&depth=0&categories=[^&]*&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK/).respond(staticCategories);
-            //httpBackend.expectGET(/.*/).respond(staticCategories);
-            //httpBackend.expectGET("https://bob.com").respond(staticCategories);
+            httpBackend.whenJSONP(/https:\/\/petscan.wmflabs.org\/\?language=en&project=wikipedia&depth=0&categories=.*&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK/)
+              .respond(staticCategories);
 
+            httpBackend.whenJSONP(/https:\/\/en.wikipedia.org\/w\/api.php\?action=query&titles=.*&prop=pageimages&format=json&pithumbsize=100&callback=JSON_CALLBACK/)
+              .respond(staticArtistAbout);
+
+            httpBackend.whenJSONP(/https:\/\/en.wikipedia.org\/w\/api.php\?format=json&action=query&prop=extracts&exintro=&explaintext=&callback=JSON_CALLBACK&titles=.*/)
+              .respond(staticAristThumb);
+
+
+            //httpBackend.whenJSONP('https://petscan.wmflabs.org/?language=en&project=wikipedia&depth=0&categories=French neoclassical painters&combination=subset&negcats=&ns%5B0%5D=1&larger=&smaller=&minlinks=&maxlinks=&before=&after=&max_age=&show_redirects=both&edits%5Bbots%5D=both&edits%5Banons%5D=both&edits%5Bflagged%5D=both&templates_yes=&templates_any=&templates_no=&outlinks_yes=&outlinks_any=&outlinks_no=&sparql=&manual_list=&manual_list_wiki=&pagepile=&common_wiki=cats&format=json&output_compatability=catscan&sortby=none&sortorder=ascending&wikidata_item=no&wikidata_label_language=&regexp_filter=&doit=Do%20it%21&interface_language=en&active_tab=tab_categories&callback=JSON_CALLBACK').respond(staticCategories);
+            //httpBackend.whenJSONP('www.bob.com').respond(staticCategories);
 
             $controller('artistBrowserController', {$scope: ctrlScope, 
                 artistList: _artistList, reformatCategories: _reformatCategories, 
@@ -49,14 +55,19 @@ describe('artistBrowserController', function() {
         it('should call artistLists on creation of controller.', function () {
 
           expect(_artistList.populateList).toHaveBeenCalled();
-
           expect(ctrlScope.artisticPeriods.length).toBe(3);
+          //expect(ctrlScope.artisticPeriods[0].artists).toEqual(3);
 
+          httpBackend.flush();
         }); // end -- should call artistLists on creation of controller.
 
     }); // end -- opening main page the first time
 
-    describe('opening main page the first time', function() {
+    /*
+     * Reformatting the JSON category api output
+     */
+
+    describe('reformatting category information from category api', function() {
 
         beforeEach(inject(function ($rootScope,$httpBackend,$controller,artistList,reformatCategories,artistMetadata) {
 
@@ -64,9 +75,9 @@ describe('artistBrowserController', function() {
 
         })); // end -- beforeEach
 
-
+        // TODO blank artist names?
         it('returns an empty array if given the kitchen sink (non objects)',function(){
-
+          console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
           expect(_reformatCategories.reformat(44)).toEqual([]); 
 
           expect(_reformatCategories.reformat("asdfad")).toEqual([]); 
